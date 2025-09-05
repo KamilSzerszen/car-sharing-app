@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-payments-table
+      author: kszerszen
+      changes:
+        - createTable:
+            tableName: payments
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rental_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: session_url
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: session_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: amount_to_pay
+                  type: DECIMAL(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_deleted
+                  type: BIT
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: payments
+            baseColumnNames: status_id
+            referencedTableName: payment_status
+            referencedColumnNames: id
+            constraintName: fk_payments_status
+        - addForeignKeyConstraint:
+            baseTableName: payments
+            baseColumnNames: type_id
+            referencedTableName: payment_type
+            referencedColumnNames: id
+            constraintName: fk_payments_type
+        - addForeignKeyConstraint:
+            baseTableName: payments
+            baseColumnNames: rental_id
+            referencedTableName: rentals
+            referencedColumnNames: id
+            constraintName: fk_payments_rental
