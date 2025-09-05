@@ -19,3 +19,20 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+
+  - changeSet:
+      id: insert-payment-statuses
+      author: kszerszen
+      changes:
+        - insert:
+            tableName: payment_status
+            columns:
+              - column:
+                  name: payment_status_name
+                  value: PENDING
+        - insert:
+            tableName: payment_status
+            columns:
+              - column:
+                  name: payment_status_name
+                  value: PAID
