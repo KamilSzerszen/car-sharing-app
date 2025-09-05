@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-car-types-table
+      author: kszerszen
+      changes:
+        - createTable:
+            tableName: car_types
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true

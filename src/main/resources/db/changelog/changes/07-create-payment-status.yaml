@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-payment-status-table
+      author: kszerszen
+      changes:
+        - createTable:
+            tableName: payment_status
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: payment_status_name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
