@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.carsharingapp.dto.UserRegistrationRequestDto;
 import org.example.carsharingapp.dto.UserResponseDto;
 import org.example.carsharingapp.dto.UserRoleUpdateRequestDto;
+import org.example.carsharingapp.dto.UserUpdateProfileInfoRequestDto;
 import org.example.carsharingapp.exception.EntityNotFoundException;
 import org.example.carsharingapp.exception.RegistrationException;
 import org.example.carsharingapp.mapper.UserMapper;
@@ -17,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Optional;
 import java.util.Set;
 
@@ -44,7 +44,19 @@ public class UserServiceImpl implements UserService{
 
         User user = userMapper.toModel(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Set.of(customerRole));
+
+        /*
+         * This block assigns roles based on email for testing/demo purposes only.
+         * Do not use in production!
+         */
+
+        if (user.getEmail().equalsIgnoreCase("manager@example.com")) {
+            Role managerRole = new Role();
+            managerRole.setName(RoleName.ROLE_MANAGER);
+            user.setRoles(Set.of(managerRole));
+        } else {
+            user.setRoles(Set.of(customerRole));
+        }
 
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
@@ -87,6 +99,24 @@ public class UserServiceImpl implements UserService{
         userById.setRoles(roles);
         User saved = userRepository.save(userById);
 
+        return userMapper.toDto(saved);
+    }
+
+    @Override
+    public UserResponseDto getUserProfileInfo() {
+        User currentUser = getCurrentUser();
+        return userMapper.toDto(currentUser);
+    }
+
+    @Override
+    public UserResponseDto updateUserProfileInfo(UserUpdateProfileInfoRequestDto requestDto) {
+        User currentUser = getCurrentUser();
+
+        currentUser.setEmail(requestDto.email());
+        currentUser.setFirstName(requestDto.firstName());
+        currentUser.setLastName(requestDto.lastName());
+
+        User saved = userRepository.save(currentUser);
         return userMapper.toDto(saved);
     }
 
