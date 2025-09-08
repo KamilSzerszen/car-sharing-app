@@ -19,3 +19,26 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+
+  - changeSet:
+      id: insert-car-types
+      author: kszerszen
+      changes:
+        - insert:
+            tableName: car_types
+            columns:
+              - column:
+                  name: type_name
+                  value: SEDAN
+        - insert:
+            tableName: car_types
+            columns:
+              - column:
+                  name: type_name
+                  value: SUV
+        - insert:
+            tableName: car_types
+            columns:
+              - column:
+                  name: type_name
+                  value: HATCHBACK

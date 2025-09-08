@@ -19,3 +19,20 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+
+  - changeSet:
+      id: insert-payment-types
+      author: kszerszen
+      changes:
+        - insert:
+            tableName: payment_type
+            columns:
+              - column:
+                  name: payment_type_name
+                  value: PAYMENT
+        - insert:
+            tableName: payment_type
+            columns:
+              - column:
+                  name: payment_type_name
+                  value: FINE
