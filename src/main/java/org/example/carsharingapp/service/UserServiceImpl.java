@@ -3,6 +3,8 @@ package org.example.carsharingapp.service;
 import lombok.RequiredArgsConstructor;
 import org.example.carsharingapp.dto.UserRegistrationRequestDto;
 import org.example.carsharingapp.dto.UserResponseDto;
+import org.example.carsharingapp.dto.UserRoleUpdateRequestDto;
+import org.example.carsharingapp.exception.EntityNotFoundException;
 import org.example.carsharingapp.exception.RegistrationException;
 import org.example.carsharingapp.mapper.UserMapper;
 import org.example.carsharingapp.model.Role;
@@ -14,6 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -32,11 +37,14 @@ public class UserServiceImpl implements UserService{
             throw new RegistrationException("Email already exist");
         }
 
-        Role cutomerRole = roleRepository.findByName(RoleName.ROLE_CUSTOMER);
+        Optional<Role> customerRoleByName = roleRepository.findByName(RoleName.ROLE_CUSTOMER);
+        Role customerRole = customerRoleByName.orElseThrow(
+                () -> new EntityNotFoundException("Customer role not found")
+        );
 
         User user = userMapper.toModel(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Set.of(cutomerRole));
+        user.setRoles(Set.of(customerRole));
 
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
@@ -46,6 +54,40 @@ public class UserServiceImpl implements UserService{
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
+    }
+
+    @Override
+    @Transactional
+    public UserResponseDto updateRoleById(Long id, UserRoleUpdateRequestDto request) {
+        User userById = userRepository.findByIdWithRoles(id).orElseThrow(
+                () -> new EntityNotFoundException("User not found")
+        );
+
+        Set<Role> roles = userById.getRoles();
+        String[] newRoles = request.roles();
+
+        for (String newRole : newRoles) {
+            String normalized = newRole.toUpperCase().trim();
+
+            Optional<RoleName> roleNameByString = RoleName.fromString(normalized);
+
+            RoleName roleByString = roleNameByString.orElseThrow(
+                    () -> new EntityNotFoundException("Role " + normalized + " not found")
+            );
+
+
+            Optional<Role> roleByName = roleRepository.findByName(roleByString);
+            Role role = roleByName.orElseThrow(
+                    () -> new EntityNotFoundException("Role " + normalized + " not found")
+            );
+
+            roles.add(role);
+        }
+
+        userById.setRoles(roles);
+        User saved = userRepository.save(userById);
+
+        return userMapper.toDto(saved);
     }
 
 }
