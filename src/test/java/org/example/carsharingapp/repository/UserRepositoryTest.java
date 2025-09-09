@@ -1,6 +1,5 @@
 package org.example.carsharingapp.repository;
 
-import org.example.carsharingapp.model.Role;
 import org.example.carsharingapp.model.RoleName;
 import org.example.carsharingapp.model.User;
 import org.junit.jupiter.api.*;
@@ -9,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 import java.util.Optional;
-import java.util.Set;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

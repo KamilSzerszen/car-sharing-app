@@ -4,19 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.carsharingapp.dto.UserResponseDto;
 import org.example.carsharingapp.dto.UserRoleUpdateRequestDto;
 import org.example.carsharingapp.dto.UserUpdateProfileInfoRequestDto;
-import org.example.carsharingapp.model.Role;
-import org.example.carsharingapp.model.RoleName;
-import org.example.carsharingapp.model.User;
-import org.example.carsharingapp.service.UserServiceImpl;
 import org.junit.jupiter.api.*;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -27,8 +18,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import java.sql.SQLException;
-import java.util.Set;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTest {

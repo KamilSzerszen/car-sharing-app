@@ -35,8 +35,11 @@ public class CarController {
         return carService.addNewCar(requestDto);
     }
 
-    @IsCustomer
-    @GetMapping
+    /*
+     * This is public endpoint. Is available for no authorized user.
+     */
+
+    @GetMapping("/all")
     @Operation(summary = "List of all cars", description = "Get a list off all cars")
     public Page<CarsResponseLiteDto> getAllCars(Pageable pageable) {
         return carService.getAllCars(pageable);
