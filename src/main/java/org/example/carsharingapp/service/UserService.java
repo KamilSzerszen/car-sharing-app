@@ -1,10 +1,10 @@
 package org.example.carsharingapp.service;
 
-import org.example.carsharingapp.dto.UserRegistrationRequestDto;
-import org.example.carsharingapp.dto.UserResponseDto;
-import org.example.carsharingapp.dto.UserRoleUpdateRequestDto;
-import org.example.carsharingapp.dto.UserUpdateProfileInfoRequestDto;
+import org.example.carsharingapp.dto.*;
 import org.example.carsharingapp.model.User;
+import org.springframework.data.domain.Page;
+
+import java.awt.print.Pageable;
 
 public interface UserService {
 
@@ -17,4 +17,5 @@ public interface UserService {
     UserResponseDto getUserProfileInfo();
 
     UserResponseDto updateUserProfileInfo(UserUpdateProfileInfoRequestDto requestDto);
+
 }
