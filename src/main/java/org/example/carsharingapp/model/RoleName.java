@@ -10,7 +10,7 @@ public enum RoleName {
         try {
             return Optional.of(RoleName.valueOf("ROLE_" + value.trim().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            return Optional.empty();
+            throw new IllegalArgumentException("Invalid role name: " + value);
         }
     }
 }

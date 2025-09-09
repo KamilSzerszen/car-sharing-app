@@ -51,8 +51,9 @@ public class UserServiceImpl implements UserService{
          */
 
         if (user.getEmail().equalsIgnoreCase("manager@example.com")) {
-            Role managerRole = new Role();
-            managerRole.setName(RoleName.ROLE_MANAGER);
+            Optional<Role> byName = roleRepository.findByName(RoleName.ROLE_MANAGER);
+            Role managerRole = byName.orElseThrow(
+                    () -> new EntityNotFoundException("Customer role not found"));
             user.setRoles(Set.of(managerRole));
         } else {
             user.setRoles(Set.of(customerRole));
