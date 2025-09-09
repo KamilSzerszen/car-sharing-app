@@ -2,6 +2,7 @@ package org.example.carsharingapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.carsharingapp.dto.UserResponseDto;
 import org.example.carsharingapp.dto.UserRoleUpdateRequestDto;
@@ -29,7 +30,7 @@ public class UserController {
     @Operation(summary = "Update roles", description = "Update user role")
     public UserResponseDto updateUserRole(
             @PathVariable Long id,
-            @RequestBody UserRoleUpdateRequestDto userRoleUpdateRequestDto) {
+            @RequestBody @Valid UserRoleUpdateRequestDto userRoleUpdateRequestDto) {
         return userService.updateRoleById(id, userRoleUpdateRequestDto);
     }
 
@@ -44,7 +45,7 @@ public class UserController {
     @PutMapping("/me")
     @Operation(summary = "Update profile", description = "Update profile info")
     public UserResponseDto updateUserProfileInfo(
-            @RequestBody UserUpdateProfileInfoRequestDto requestDto
+            @RequestBody @Valid UserUpdateProfileInfoRequestDto requestDto
     ) {
         return userService.updateUserProfileInfo(requestDto);
     }
