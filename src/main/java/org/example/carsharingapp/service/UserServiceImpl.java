@@ -18,13 +18,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 import java.util.Set;
 
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -34,13 +35,16 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponseDto register(UserRegistrationRequestDto request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new RegistrationException("Email already exist");
+            throw new RegistrationException(
+                    "UserService: Email already exist"
+            );
         }
 
         Optional<Role> customerRoleByName = roleRepository.findByName(RoleName.ROLE_CUSTOMER);
         Role customerRole = customerRoleByName.orElseThrow(
-                () -> new EntityNotFoundException("Customer role not found")
-        );
+                () -> new EntityNotFoundException(
+                        "UserService: Customer role not found"
+                ));
 
         User user = userMapper.toModel(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -53,7 +57,9 @@ public class UserServiceImpl implements UserService{
         if (user.getEmail().equalsIgnoreCase("manager@example.com")) {
             Optional<Role> byName = roleRepository.findByName(RoleName.ROLE_MANAGER);
             Role managerRole = byName.orElseThrow(
-                    () -> new EntityNotFoundException("Customer role not found"));
+                    () -> new EntityNotFoundException(
+                            "UserService: Customer role not found"
+                    ));
             user.setRoles(Set.of(managerRole));
         } else {
             user.setRoles(Set.of(customerRole));
@@ -73,8 +79,9 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public UserResponseDto updateRoleById(Long id, UserRoleUpdateRequestDto request) {
         User userById = userRepository.findByIdWithRoles(id).orElseThrow(
-                () -> new EntityNotFoundException("User not found")
-        );
+                () -> new EntityNotFoundException(
+                        "UserService: User not found"
+                ));
 
         Set<Role> roles = userById.getRoles();
         String[] newRoles = request.roles();
@@ -85,14 +92,16 @@ public class UserServiceImpl implements UserService{
             Optional<RoleName> roleNameByString = RoleName.fromString(normalized);
 
             RoleName roleByString = roleNameByString.orElseThrow(
-                    () -> new EntityNotFoundException("Role " + normalized + " not found")
-            );
+                    () -> new EntityNotFoundException(
+                            "UserService: Role " + normalized + " not found"
+                    ));
 
 
             Optional<Role> roleByName = roleRepository.findByName(roleByString);
             Role role = roleByName.orElseThrow(
-                    () -> new EntityNotFoundException("Role " + normalized + " not found")
-            );
+                    () -> new EntityNotFoundException(
+                            "UserService: Role " + normalized + " not found"
+                    ));
 
             roles.add(role);
         }
