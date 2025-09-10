@@ -28,15 +28,15 @@ public class UserControllerTest {
     private ObjectMapper objectMapper;
 
     @BeforeAll
-    public static void beforeAll(
-            @Autowired WebApplicationContext webApplicationContext
-            ) {
+    static void beforeAll(
+            @Autowired WebApplicationContext applicationContext
+            )
+    {
         mockMvc = MockMvcBuilders
-                .webAppContextSetup(webApplicationContext)
+                .webAppContextSetup(applicationContext)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
     }
-
 
     @Test
     @WithMockUser(username = "manager", roles = {"MANAGER"})
