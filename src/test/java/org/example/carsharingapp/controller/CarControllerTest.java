@@ -79,7 +79,7 @@ public class CarControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
-            scripts = "classpath:database/add-defoult-car.sql",
+            scripts = "classpath:database/add-default-car.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
@@ -112,7 +112,7 @@ public class CarControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
-            scripts = "classpath:database/add-defoult-car.sql",
+            scripts = "classpath:database/add-default-car.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
@@ -148,7 +148,7 @@ public class CarControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
-            scripts = "classpath:database/add-defoult-car.sql",
+            scripts = "classpath:database/add-default-car.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
@@ -195,7 +195,7 @@ public class CarControllerTest {
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
-            scripts = "classpath:database/add-defoult-car.sql",
+            scripts = "classpath:database/add-default-car.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     )
     @Sql(
