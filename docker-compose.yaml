@@ -18,7 +18,7 @@ services:
     build: .
     container_name: car-sharing-app
     ports:
-      - "8081:8080"
+      - "${DOCKER_APP_PORT}:8080"
     env_file:
       - .env
     depends_on:

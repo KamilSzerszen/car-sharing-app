@@ -17,7 +17,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +32,7 @@ public class RentalServiceImpl implements RentalService {
     private final RentalMapper rentalMapper;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final NotificationService telegramService;
 
     @Override
     @Transactional
@@ -60,6 +60,16 @@ public class RentalServiceImpl implements RentalService {
         Rental savedRental = rentalRepository.save(rental);
         Rental rentalWithDetails = rentalRepository.findById(savedRental.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Rental after save not found"));
+
+
+        telegramService.sendNotification(
+                "New rental:" + "\n"
+                + "Car: " + car.getBrand() + "\n"
+                + "Model: " + car.getModel() + "\n"
+                + "Date: " + rental.getRentalDate() + "\n"
+                + "Return date: " + rental.getReturnDate() + "\n"
+                + "User: " + currentUser.getEmail()
+        );
 
         return rentalMapper.toDto(rentalWithDetails);
     }

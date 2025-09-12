@@ -27,6 +27,22 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
             @Param("requestRentalDate") LocalDateTime requestRentalDate
     );
 
+<<<<<<< HEAD
     @EntityGraph(attributePaths = {"user", "car"})
     List<Rental> findAllByUserId(@Param("userId") Long userId);
+=======
+    @Query("""
+            SELECT r
+            FROM Rental r
+            WHERE r.actualReturnDate IS NULL
+            AND r.returnDate <= :requestReturnDate
+            """)
+    List<Rental> findOverdueRentals(
+            @Param("requestReturnDate") LocalDateTime requestReturnDate
+    );
+
+    @EntityGraph(attributePaths = {"user", "car"})
+    List<Rental> findAllByUserId(@Param("userId") Long userId);
+
+>>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)
 }

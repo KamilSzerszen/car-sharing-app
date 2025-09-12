@@ -51,6 +51,12 @@ public class RentalServiceTest {
     @Mock
     private RoleRepository roleRepository;
 
+<<<<<<< HEAD
+=======
+    @Mock
+    private NotificationService telegramService;
+
+>>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)
     @InjectMocks
     private RentalServiceImpl rentalService;
 
