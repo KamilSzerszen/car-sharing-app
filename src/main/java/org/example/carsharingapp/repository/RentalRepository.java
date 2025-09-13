@@ -27,10 +27,9 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
             @Param("requestRentalDate") LocalDateTime requestRentalDate
     );
 
-<<<<<<< HEAD
     @EntityGraph(attributePaths = {"user", "car"})
     List<Rental> findAllByUserId(@Param("userId") Long userId);
-=======
+
     @Query("""
             SELECT r
             FROM Rental r
@@ -43,6 +42,4 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     @EntityGraph(attributePaths = {"user", "car"})
     List<Rental> findAllByUserId(@Param("userId") Long userId);
-
->>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)
 }

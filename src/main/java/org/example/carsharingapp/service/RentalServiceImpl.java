@@ -61,7 +61,6 @@ public class RentalServiceImpl implements RentalService {
         Rental rentalWithDetails = rentalRepository.findById(savedRental.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Rental after save not found"));
 
-
         telegramService.sendNotification(
                 "New rental:" + "\n"
                 + "Car: " + car.getBrand() + "\n"
