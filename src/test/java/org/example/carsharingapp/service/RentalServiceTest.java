@@ -51,6 +51,9 @@ public class RentalServiceTest {
     @Mock
     private RoleRepository roleRepository;
 
+    @Mock
+    private NotificationService telegramService;
+
     @InjectMocks
     private RentalServiceImpl rentalService;
 

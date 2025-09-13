@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10-update-payments-sessionurl-sessionid.yaml
+      author: kszerszen
+      changes:
+        - modifyDataType:
+            tableName: payments
+            columnName: session_url
+            newDataType: TEXT
+        - modifyDataType:
+            tableName: payments
+            columnName: session_id
+            newDataType: TEXT
