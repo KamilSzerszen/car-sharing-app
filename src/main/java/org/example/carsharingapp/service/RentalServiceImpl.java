@@ -34,6 +34,7 @@ public class RentalServiceImpl implements RentalService {
     private final RoleRepository roleRepository;
     private final NotificationService telegramService;
 
+
     @Override
     @Transactional
     public RentalResponseDto addNewRental(RentalRequestDto request) {
@@ -60,7 +61,6 @@ public class RentalServiceImpl implements RentalService {
         Rental savedRental = rentalRepository.save(rental);
         Rental rentalWithDetails = rentalRepository.findById(savedRental.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Rental after save not found"));
-
 
         telegramService.sendNotification(
                 "New rental:" + "\n"
