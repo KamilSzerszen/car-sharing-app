@@ -39,12 +39,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/auth/**",
-<<<<<<< HEAD
-=======
                                         "/payments/success",
                                         "/payments/success/**",
                                         "/payments/cancel",
->>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)
                                         "/cars/all",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",

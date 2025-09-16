@@ -17,8 +17,5 @@ databaseChangeLog:
       file: db/changelog/changes/08-create-payment-type-table.yaml
   - include:
       file: db/changelog/changes/09-create-payments-table.yaml
-<<<<<<< HEAD
-=======
   - include:
       file: db/changelog/changes/10-update-payments-sessionurl-sessionid.yaml
->>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)

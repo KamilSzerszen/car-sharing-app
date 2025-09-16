@@ -4,12 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.carsharingapp.dto.RentalRequestDto;
 import org.example.carsharingapp.dto.RentalResponseDto;
-<<<<<<< HEAD
-=======
 import org.example.carsharingapp.service.NotificationService;
 import org.example.carsharingapp.service.OverdueRentalChecker;
 import org.example.carsharingapp.service.StripePaymentService;
->>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -20,10 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-<<<<<<< HEAD
-=======
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
->>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -36,8 +30,6 @@ import java.time.LocalDateTime;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RentalControllerTest {
 
-<<<<<<< HEAD
-=======
     @MockitoBean
     private NotificationService telegramService;
 
@@ -47,7 +39,6 @@ public class RentalControllerTest {
     @MockitoBean
     private OverdueRentalChecker overdueRentalChecker;
 
->>>>>>> 75ed46d (Create Payment: controller, service, repository, mapper. Add Stripe and Telegram API)
     protected static MockMvc mockMvc;
 
     @Autowired
