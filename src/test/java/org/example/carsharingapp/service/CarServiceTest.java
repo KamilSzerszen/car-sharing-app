@@ -9,7 +9,6 @@ import org.example.carsharingapp.model.Car;
 import org.example.carsharingapp.model.CarType;
 import org.example.carsharingapp.model.TypeName;
 import org.example.carsharingapp.repository.CarRepository;
-import org.example.carsharingapp.repository.CarRepositoryTest;
 import org.example.carsharingapp.repository.CarTypeRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
