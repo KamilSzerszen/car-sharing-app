@@ -1,15 +1,16 @@
 package org.example.carsharingapp.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestTemplate;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class TelegramNotificationService implements NotificationService {
-
-    private final WebClient webClient;
 
     @Value("${telegram.api.key}")
     private String botToken;
@@ -17,29 +18,21 @@ public class TelegramNotificationService implements NotificationService {
     @Value("${telegram.chat.id}")
     private String chatId;
 
-    public TelegramNotificationService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://api.telegram.org").build();
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public void sendNotification(String message) {
-        String url = "/bot" + botToken + "/sendMessage";
+        String url = "https://api.telegram.org/bot" + botToken + "/sendMessage";
 
-        Map<String, String> requestBody = Map.of(
-                "chat_id", chatId,
-                "text", message
-        );
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("chat_id", chatId);
+        requestBody.put("text", message);
 
-        webClient.post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(requestBody)
-                .retrieve()
-                .bodyToMono(String.class)
-                .doOnError(e -> System.err.println(
-                        "Error send message " + e.getMessage()
-                ))
-                .block();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+
+        restTemplate.postForObject(url, entity, String.class);
     }
-
 }
