@@ -29,4 +29,15 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     @EntityGraph(attributePaths = {"user", "car"})
     List<Rental> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT r
+            FROM Rental r
+            WHERE r.actualReturnDate IS NULL
+            AND r.returnDate <= :requestReturnDate
+            """)
+    List<Rental> findOverdueRentals(
+            @Param("requestReturnDate") LocalDateTime requestReturnDate
+    );
+
 }

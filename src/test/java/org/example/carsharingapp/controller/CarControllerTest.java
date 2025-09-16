@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.carsharingapp.dto.CarRequestDto;
 import org.example.carsharingapp.dto.CarResponseDto;
+import org.example.carsharingapp.service.NotificationService;
+import org.example.carsharingapp.service.OverdueRentalChecker;
+import org.example.carsharingapp.service.StripePaymentService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,6 +28,15 @@ import java.math.BigDecimal;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CarControllerTest {
+
+    @MockitoBean
+    private NotificationService telegramService;
+
+    @MockitoBean
+    private StripePaymentService stripePaymentService;
+
+    @MockitoBean
+    private OverdueRentalChecker overdueRentalChecker;
 
     protected static MockMvc mockMvc;
 

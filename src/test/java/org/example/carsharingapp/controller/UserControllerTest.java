@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.carsharingapp.dto.UserResponseDto;
 import org.example.carsharingapp.dto.UserRoleUpdateRequestDto;
 import org.example.carsharingapp.dto.UserUpdateProfileInfoRequestDto;
+import org.example.carsharingapp.service.NotificationService;
+import org.example.carsharingapp.service.OverdueRentalChecker;
+import org.example.carsharingapp.service.StripePaymentService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,6 +25,15 @@ import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTest {
+
+    @MockitoBean
+    private NotificationService telegramService;
+
+    @MockitoBean
+    private StripePaymentService stripePaymentService;
+
+    @MockitoBean
+    private OverdueRentalChecker overdueRentalChecker;
 
     protected static MockMvc mockMvc;
 

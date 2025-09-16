@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/changes/08-create-payment-type-table.yaml
   - include:
       file: db/changelog/changes/09-create-payments-table.yaml
+  - include:
+      file: db/changelog/changes/10-update-payments-sessionurl-sessionid.yaml
