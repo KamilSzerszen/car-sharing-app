@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StripePaymentServiceImpl implements StripePaymentService {
 
-    @Value("${docker.app.port}")
-    private String dockerAppPort;
+    @Value("${app.base-url}")
+    private String appBaseUrl;
 
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
@@ -22,8 +22,8 @@ public class StripePaymentServiceImpl implements StripePaymentService {
     public Session createCheckoutSession(Long rentalId, Long amount) throws StripeException {
         Stripe.apiKey = stripeSecretKey;
 
-        String successUrl = "http://localhost:" + dockerAppPort + "/payments/success";
-        String cancelUrl = "http://localhost:" + dockerAppPort + "/payments/cancel";
+        String successUrl = appBaseUrl + "/payments/success";
+        String cancelUrl = appBaseUrl + "/payments/cancel";
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
@@ -37,7 +37,7 @@ public class StripePaymentServiceImpl implements StripePaymentService {
                                                 .LineItem
                                                 .PriceData.builder()
                                                 .setCurrency("usd")
-                                                .setUnitAmount(amount * 100)
+                                                .setUnitAmount(amount)
                                                 .setProductData(
                                                         SessionCreateParams
                                                                 .LineItem

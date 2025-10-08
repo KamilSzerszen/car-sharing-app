@@ -3,7 +3,7 @@ package org.example.carsharingapp.service;
 import lombok.RequiredArgsConstructor;
 import org.example.carsharingapp.dto.CarRequestDto;
 import org.example.carsharingapp.dto.CarResponseDto;
-import org.example.carsharingapp.dto.CarsResponseLiteDto;
+import org.example.carsharingapp.dto.CarResponseLiteDto;
 import org.example.carsharingapp.exception.EntityNotFoundException;
 import org.example.carsharingapp.mapper.CarMapper;
 import org.example.carsharingapp.model.Car;
@@ -46,7 +46,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Page<CarsResponseLiteDto> getAllCars(Pageable pageable) {
+    public Page<CarResponseLiteDto> getAllCars(Pageable pageable) {
         return carRepository.findAll(pageable)
                 .map(carMapper::toLiteDto);
     }
@@ -88,8 +88,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public String deleteCarById(Long id) {
+    public void deleteCarById(Long id) {
         carRepository.deleteById(id);
-        return "Car with id: " + id + " was deleted";
     }
 }

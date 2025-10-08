@@ -31,7 +31,7 @@ public class Car {
     private String brand;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_type_id", nullable = false)
     private CarType type;
 

@@ -3,6 +3,7 @@ package org.example.carsharingapp.service;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.carsharingapp.dto.PaymentResponseDto;
 import org.example.carsharingapp.dto.PaymentUrlResponseDto;
 import org.example.carsharingapp.exception.AccessDeniedException;
@@ -32,6 +33,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -54,7 +56,11 @@ public class PaymentServiceImpl implements PaymentService {
         User currentUser = userService.getCurrentUser();
         Role managerRole = getUserRole(RoleName.ROLE_MANAGER);
 
+        log.info("User {} is creating payment session for rentalId={}", currentUser.getEmail(), id);
+
+
         if (rentalById.getActualReturnDate() == null) {
+            log.warn("Payment attempt for rentalId={} failed: car not returned yet", id);
             throw new PaymentException(
                     "PaymentService: Car has not been returned"
             );
@@ -63,6 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
                 rentalById.getUser().getId() != currentUser.getId()
                         && !currentUser.getRoles().contains(managerRole)
         ) {
+            log.warn("Access denied: user {} tried to pay for rentalId={}", currentUser.getEmail(), id);
             throw new AccessDeniedException(
                     "PaymentService: Rental with id " + id + " not exist for current user"
             );
@@ -77,14 +84,17 @@ public class PaymentServiceImpl implements PaymentService {
         BigDecimal amount = getAmount(
                 isOverdue, dailyPrice, rentalDate, returnDate, actualReturnDate
         );
+        log.info("Calculated payment amount {} for rentalId={}", amount, id);
 
-        long amountInCents = amount.multiply(BigDecimal.valueOf(100.0)).longValueExact();
+        long amountInCents = amount.longValueExact();
 
         Session session;
 
         try {
             session = getStripeSession(rentalById.getId(), amountInCents);
+            log.info("Stripe session created for rentalId={}, sessionId={}", id, session.getId());
         } catch (StripeException e) {
+            log.error("Stripe session creation failed for rentalId={}, error={}", id, e.getMessage());
             throw new StripeSessionException(
                     "PaymentService: Can't make Stripe session for rental with id " + id
             );
@@ -104,6 +114,8 @@ public class PaymentServiceImpl implements PaymentService {
         newPayment.setAmountToPay(amount);
 
         Payment saved = paymentRepository.save(newPayment);
+        log.info("Payment saved with id={} and status={}", saved.getId(), saved.getStatus().getPaymentStatusName());
+
         return new PaymentUrlResponseDto(saved.getSessionUrl());
     }
 
@@ -138,14 +150,18 @@ public class PaymentServiceImpl implements PaymentService {
             Payment payment = getPayment(id);
             payment.setStatus(getPaymentStatus(PaymentStatusName.PAID));
             paymentRepository.save(payment);
+            log.info("Payment with id={} marked as PAID", id);
+
             return "Payment successful! Payment with id " + id
                     + " change on PAID status (Demo mode)";
         }
+        log.info("Payment successful (Demo mode)");
         return "Payment successful! (Demo mode)";
     }
 
     @Override
     public String cancelled() {
+        log.info("Payment cancelled");
         return "Payment cancelled";
     }
 

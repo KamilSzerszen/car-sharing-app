@@ -2,6 +2,7 @@ package org.example.carsharingapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.carsharingapp.dto.RentalRequestDto;
 import org.example.carsharingapp.dto.RentalResponseDto;
@@ -23,7 +24,7 @@ public class RentalController {
     @IsCustomer
     @PostMapping
     @Operation(summary = "Add new rental", description = "Add new rental for current user")
-    public RentalResponseDto addNewRental(@RequestBody RentalRequestDto rentalRequestDto) {
+    public RentalResponseDto addNewRental(@RequestBody @Valid RentalRequestDto rentalRequestDto) {
         return rentalService.addNewRental(rentalRequestDto);
     }
 

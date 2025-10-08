@@ -2,23 +2,18 @@ package org.example.carsharingapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.carsharingapp.dto.CarRequestDto;
 import org.example.carsharingapp.dto.CarResponseDto;
-import org.example.carsharingapp.dto.CarsResponseLiteDto;
+import org.example.carsharingapp.dto.CarResponseLiteDto;
 import org.example.carsharingapp.security.annotation.IsCustomer;
 import org.example.carsharingapp.security.annotation.IsManager;
 import org.example.carsharingapp.service.CarService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Cars Controller", description = "Managing car inventory")
 @RestController
@@ -31,17 +26,13 @@ public class CarController {
     @IsManager
     @PostMapping
     @Operation(summary = "Add a new car", description = "Add a new car")
-    public CarResponseDto addNewCar(@RequestBody CarRequestDto requestDto) {
+    public CarResponseDto addNewCar(@RequestBody @Valid CarRequestDto requestDto) {
         return carService.addNewCar(requestDto);
     }
 
-    /*
-     * This is public endpoint. Is available for no authorized user.
-     */
-
-    @GetMapping("/all")
+    @GetMapping()
     @Operation(summary = "List of all cars", description = "Get a list off all cars")
-    public Page<CarsResponseLiteDto> getAllCars(Pageable pageable) {
+    public Page<CarResponseLiteDto> getAllCars(Pageable pageable) {
         return carService.getAllCars(pageable);
     }
 
@@ -56,14 +47,15 @@ public class CarController {
     @PutMapping("/{id}")
     @Operation(summary = "Update car", description = "Update car details")
     public CarResponseDto updateCarById(@PathVariable Long id,
-                                        @RequestBody CarRequestDto requestDto) {
+                                        @RequestBody @Valid CarRequestDto requestDto) {
         return carService.updateCarById(id, requestDto);
     }
 
     @IsManager
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete car", description = "Delete car with valid id")
-    public String deleteCarById(@PathVariable Long id) {
-        return carService.deleteCarById(id);
+    public void deleteCarById(@PathVariable Long id) {
+       carService.deleteCarById(id);
     }
 }

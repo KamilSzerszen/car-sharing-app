@@ -2,6 +2,8 @@ package org.example.carsharingapp.repository;
 
 import org.example.carsharingapp.model.Car;
 import org.example.carsharingapp.model.Rental;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,9 +15,18 @@ import java.util.Optional;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
 
+    @EntityGraph(attributePaths = {"user", "car"})
+    Page<Rental> findAllByUserIdAndActualReturnDateIsNull(Long userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"user", "car"})
+    Page<Rental> findAllByUserIdAndActualReturnDateIsNotNull(Long userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"user", "car"})
+    Page<Rental> findAllByUserId(Long userId, Pageable pageable);
+
     @Query("""
-            SELECT r 
-            FROM Rental r 
+            SELECT r
+            FROM Rental r
             WHERE r.car = :car
               AND r.actualReturnDate IS NULL
               AND r.rentalDate < :requestReturnDate
