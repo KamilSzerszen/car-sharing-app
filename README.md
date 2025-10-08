@@ -17,7 +17,9 @@ This project was created as part of my portfolio to showcase backend development
 - 🔐 **User authentication & roles** (JWT + Spring Security)  
   - Users can register and log in.  
   - Roles: `CUSTOMER`, `MANAGER`. 
-  - Special testing case: registering with **`manager@example.com`** automatically assigns the `MANAGER` role.  
+  - Special testing case: a user with the MANAGER role who is already in the database for testing purposes.
+    > login: manager@test.com \
+    > password: 123456
 
 - 🚘 **Car management**  
   - CRUD operations for cars.  
@@ -35,13 +37,14 @@ This project was created as part of my portfolio to showcase backend development
     - Since Stripe does not send IDs back to localhost, you need to manually append `?id=PAYMENT_ID`.  
     - In production, Stripe **webhooks** would be used to update payment status automatically.  
   - This simplified flow makes it possible to test payments locally without exposing public endpoints.
- 
+<br>
+
    > ⚠️ **Note:** These endpoints are **for testing/demo purposes only**.  
    > In production, Stripe webhooks should automatically update the payment status.  
    > For demo purposes, you need to manually append `?id=PAYMENT_ID` to the URL after Stripe redirects,  
    > because Stripe does not send the payment ID or any data to localhost.  
    > For your convenience, it has been implemented this way 🙂
-
+<br>
 - 📲 **Telegram notifications**  
   - When a new reservation is created, a notification is sent to a Telegram bot.  
   - Example screenshot:  
