@@ -13,6 +13,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
+                    unique: true
               - column:
                   name: name
                   type: VARCHAR(50)

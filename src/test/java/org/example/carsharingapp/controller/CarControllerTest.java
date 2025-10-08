@@ -102,7 +102,7 @@ public class CarControllerTest {
     public void getAllCars_validRequest_returnTwoCar() throws Exception {
 
         MvcResult mvcResult = mockMvc.perform(
-                        MockMvcRequestBuilders.get("/cars/all")
+                        MockMvcRequestBuilders.get("/cars")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -222,7 +222,7 @@ public class CarControllerTest {
                         MockMvcRequestBuilders.delete("/cars/{id}", validId)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
 
     }
 

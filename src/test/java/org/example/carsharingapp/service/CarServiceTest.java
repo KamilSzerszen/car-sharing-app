@@ -2,7 +2,7 @@ package org.example.carsharingapp.service;
 
 import org.example.carsharingapp.dto.CarRequestDto;
 import org.example.carsharingapp.dto.CarResponseDto;
-import org.example.carsharingapp.dto.CarsResponseLiteDto;
+import org.example.carsharingapp.dto.CarResponseLiteDto;
 import org.example.carsharingapp.exception.EntityNotFoundException;
 import org.example.carsharingapp.mapper.CarMapper;
 import org.example.carsharingapp.model.Car;
@@ -102,7 +102,7 @@ public class CarServiceTest {
         car.setBrand("test");
         car.setAvailableCars(5);
 
-        CarsResponseLiteDto liteDto = new CarsResponseLiteDto(
+        CarResponseLiteDto liteDto = new CarResponseLiteDto(
                 1L,
                 "test",
                 "test"
@@ -113,7 +113,7 @@ public class CarServiceTest {
         Mockito.when(carRepository.findAll(pageable)).thenReturn(page);
         Mockito.when(carMapper.toLiteDto(car)).thenReturn(liteDto);
 
-        Page<CarsResponseLiteDto> result = carService.getAllCars(pageable);
+        Page<CarResponseLiteDto> result = carService.getAllCars(pageable);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(1, result.getTotalElements());
@@ -261,15 +261,9 @@ public class CarServiceTest {
     @DisplayName("Should delete car by id")
     public void deleteCarById_validId_returnConfirmationMessage() {
         Long id = 1L;
-
-        String expected = "Car with id: " + id + " was deleted";
-
-        String result = carService.deleteCarById(id);
+        carService.deleteCarById(id);
 
         Mockito.verify(carRepository, Mockito.times(1)).deleteById(id);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(expected, result);
     }
 
 }

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("""
@@ -15,4 +17,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             WHERE p.rental.user.id = :userId
             """)
     Page<Payment> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("""
+            SELECT p
+            FROM Payment p
+            WHERE p.rental.user.id = :userId
+            """)
+    List<Payment> findAllByUserId(@Param("userId") Long userId);
 }

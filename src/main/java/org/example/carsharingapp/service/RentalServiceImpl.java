@@ -5,16 +5,15 @@ import org.example.carsharingapp.dto.RentalRequestDto;
 import org.example.carsharingapp.dto.RentalResponseDto;
 import org.example.carsharingapp.exception.EntityNotFoundException;
 import org.example.carsharingapp.exception.NoAvailableCarsException;
+import org.example.carsharingapp.exception.PaymentException;
 import org.example.carsharingapp.exception.ReturnRentalException;
 import org.example.carsharingapp.mapper.RentalMapper;
 import org.example.carsharingapp.model.*;
-import org.example.carsharingapp.repository.CarRepository;
-import org.example.carsharingapp.repository.RentalRepository;
-import org.example.carsharingapp.repository.RoleRepository;
-import org.example.carsharingapp.repository.UserRepository;
+import org.example.carsharingapp.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-@Service
+@Service("rentalServiceImpl")
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
 
@@ -33,11 +32,29 @@ public class RentalServiceImpl implements RentalService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final NotificationService telegramService;
+    private final PaymentRepository paymentRepository;
+    private final PaymentStatusRepository paymentStatusRepository;
 
 
     @Override
     @Transactional
     public RentalResponseDto addNewRental(RentalRequestDto request) {
+        User currentUser = userService.getCurrentUser();
+
+        List<Payment> allByUserId = paymentRepository.findAllByUserId(currentUser.getId());
+
+        PaymentStatus pendingStatus = paymentStatusRepository
+                .findByPaymentStatusName(PaymentStatusName.PENDING)
+                .orElseThrow(
+                () -> new EntityNotFoundException("RentalService: No payment status found")
+        );
+
+        for (Payment payment : allByUserId) {
+            if (payment.getStatus().equals(pendingStatus)) {
+                throw new PaymentException("User: " + currentUser + " already has unpaid payment");
+            }
+        }
+
         Car car = carRepository.findById(request.carId())
                 .orElseThrow(() -> new EntityNotFoundException("Car not found"));
 
@@ -49,8 +66,6 @@ public class RentalServiceImpl implements RentalService {
         if (availableInPeriod <= 0) {
             throw new NoAvailableCarsException("No cars available in the selected period");
         }
-
-        User currentUser = userService.getCurrentUser();
 
         Rental rental = new Rental();
         rental.setCar(car);
@@ -78,99 +93,47 @@ public class RentalServiceImpl implements RentalService {
     public Page<RentalResponseDto> getRentalsByUserIdAndIsActive(
             Long userId, Boolean isActive, Pageable pageable
     ) {
-        User userById = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException(
-                        "RentalService: User with id: " + userId + " not found"
-                ));
+        Page<Rental> rentalPage;
 
-        List<Rental> allByUserId = rentalRepository.findAllByUserId(userById.getId());
-        List<RentalResponseDto> byParams = allByUserId.stream()
-                .filter(
-                        r -> isActive == null
-                                || isActive ? r.getActualReturnDate() == null
-                                : r.getActualReturnDate() != null
-                )
-                .map(rentalMapper::toDto)
-                .toList();
+        if (isActive == null) {
+            rentalPage = rentalRepository
+                    .findAllByUserId(userId, pageable);
+        } else if (isActive) {
+            rentalPage = rentalRepository
+                    .findAllByUserIdAndActualReturnDateIsNull(userId, pageable);
+        } else {
+            rentalPage = rentalRepository
+                    .findAllByUserIdAndActualReturnDateIsNotNull(userId, pageable);
+        }
 
-        return new PageImpl<>(byParams, pageable, byParams.size());
+        return rentalPage.map(rentalMapper::toDto);
     }
 
     @Override
     public Page<RentalResponseDto> getRentalByCurrentUser(Pageable pageable) {
         User currentUser = userService.getCurrentUser();
+        Page<Rental> rentalPage = rentalRepository.findAllByUserId(currentUser.getId(), pageable);
 
-        List<Rental> allByUserId = rentalRepository.findAllByUserId(currentUser.getId());
-        List<RentalResponseDto> rentalResponseDtos = allByUserId.stream()
-                .map(rentalMapper::toDto)
-                .toList();
-
-        return new PageImpl<>(rentalResponseDtos, pageable, rentalResponseDtos.size());
+        return rentalPage.map(rentalMapper::toDto);
     }
 
     @Override
-    @Transactional
+    @PreAuthorize("hasRole('MANAGER') or @rentalServiceImpl.isOwner(#id, principal.username)")
     public RentalResponseDto returnRentalByRentalId(Long id) {
-        User currentUser = userService.getCurrentUser();
-        Set<Role> currentUserRoles = currentUser.getRoles();
 
-        Optional<Role> managerOptional = roleRepository.findByName(RoleName.ROLE_MANAGER);
-        Role managerRole = managerOptional.orElseThrow(
-                () -> new EntityNotFoundException(
-                        "RoleService: Role with name: " + RoleName.ROLE_MANAGER + " not found"
-                ));
+        Rental rental = rentalRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("RentalService: No rental found")
+        );
 
-        Optional<Role> customerOptional = roleRepository.findByName(RoleName.ROLE_CUSTOMER);
-        Role customerRole = customerOptional.orElseThrow(
-                () -> new EntityNotFoundException(
-                        "RoleService: Role with name: " + RoleName.ROLE_CUSTOMER + " not found"
-                ));
-
-        Optional<Rental> rentalById = rentalRepository.findById(id);
-        Rental rental = rentalById.orElseThrow(
-                () -> new EntityNotFoundException(
-                        "RentalService: Rental with id: " + id + " not found"
-                ));
-
-        Car rentalCar = rental.getCar();
-
-        /*
-         * User has role CUSTOMER cannot see other customer rental.
-         */
-
-        if (!currentUserRoles.contains(managerRole)) {
-
-            if (!rental.getUser().getId().equals(currentUser.getId())) {
-                throw new ReturnRentalException(
-                        "ReturnRental: User "
-                        + currentUser.getEmail()
-                        + " does not have a rental with id: "
-                        + id
-                );
-            }
-
-            if (rental.getActualReturnDate() != null) {
-                throw new ReturnRentalException(
-                        "RentalService: Rental with id: "
-                                + id
-                                + " has returned: "
-                                + rental.getActualReturnDate()
-                );
-            }
-            
-            rental.setActualReturnDate(LocalDateTime.now());
-
-            Rental saved = rentalRepository.save(rental);
-
-            return rentalMapper.toDto(saved);
-        }
-        
         rental.setActualReturnDate(LocalDateTime.now());
-        rentalCar.setAvailableCars(rentalCar.getAvailableCars() + 1);
-
         Rental saved = rentalRepository.save(rental);
-        carRepository.save(rentalCar);
         
         return rentalMapper.toDto(saved);
+    }
+
+    public boolean isOwner(Long rentalId, String username) {
+        return rentalRepository.findById(rentalId)
+                .map(r -> r.getUser().getEmail().equals(username))
+                .orElse(false);
     }
 }

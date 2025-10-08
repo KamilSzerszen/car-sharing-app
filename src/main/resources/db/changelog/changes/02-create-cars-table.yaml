@@ -32,7 +32,7 @@ databaseChangeLog:
                   name: available_cars
                   type: INT
                   constraints:
-                    nullable: true
+                    nullable: false
               - column:
                   name: daily_price
                   type: DECIMAL(19,2)

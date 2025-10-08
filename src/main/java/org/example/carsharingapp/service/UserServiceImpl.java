@@ -1,6 +1,7 @@
 package org.example.carsharingapp.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.carsharingapp.dto.UserRegistrationRequestDto;
 import org.example.carsharingapp.dto.UserResponseDto;
 import org.example.carsharingapp.dto.UserRoleUpdateRequestDto;
@@ -13,6 +14,7 @@ import org.example.carsharingapp.model.RoleName;
 import org.example.carsharingapp.model.User;
 import org.example.carsharingapp.repository.RoleRepository;
 import org.example.carsharingapp.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.Set;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -34,9 +36,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto request) {
+        log.info("Registering new user with email={}", request.email());
+
         if (userRepository.findByEmail(request.email()).isPresent()) {
+            log.warn("Registration failed: email {} already in use", request.email());
             throw new RegistrationException(
-                    "UserService: Email already exist"
+                    "UserService: Email already in use"
             );
         }
 
@@ -49,24 +54,16 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toModel(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        /*
-         * This block assigns roles based on email for testing/demo purposes only.
-         * Do not use in production!
-         */
+        try {
+            User savedUser = userRepository.save(user);
+            log.info("User registered successfully: id={}, email={}", savedUser.getId(),
+                    savedUser.getEmail());
 
-        if (user.getEmail().equalsIgnoreCase("manager@example.com")) {
-            Optional<Role> byName = roleRepository.findByName(RoleName.ROLE_MANAGER);
-            Role managerRole = byName.orElseThrow(
-                    () -> new EntityNotFoundException(
-                            "UserService: Customer role not found"
-                    ));
-            user.setRoles(Set.of(managerRole));
-        } else {
-            user.setRoles(Set.of(customerRole));
+            return userMapper.toDto(savedUser);
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Registration failed: email {} already in use", request.email());
+            throw new RegistrationException("UserService: Email already in use");
         }
-
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
     }
 
     @Override
